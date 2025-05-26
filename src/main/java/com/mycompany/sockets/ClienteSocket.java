@@ -20,14 +20,11 @@ public class ClienteSocket {
      */
     public ClienteSocket(String host, int port, BingoClient ui) throws IOException {
         this.ui = ui;
-
         // Cria o socket e liga ao servidor
         this.socket = new Socket(host, port);
-
         // Inicializa os fluxos de entrada e saída de dados
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(socket.getOutputStream(), true); // 'true' ativa autoflush
-
         // Inicia uma thread separada para ouvir mensagens do servidor
         new Thread(this::ouvirServidor).start();
     }
@@ -45,13 +42,11 @@ public class ClienteSocket {
     private void ouvirServidor() {
         try {
             String linha;
-
             // Loop contínuo: lê mensagens do servidor até a ligação ser fechada
             while ((linha = in.readLine()) != null) {
                 System.out.println("Servidor: " + linha); // Para debug
                 tratarMensagem(linha); // Processa a mensagem recebida
             }
-
         } catch (IOException e) {
             e.printStackTrace(); // Imprime o erro se a ligação falhar
         }

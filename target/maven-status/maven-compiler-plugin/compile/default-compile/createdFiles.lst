@@ -1,4 +1,5 @@
 com\mycompany\sockets\BingoClient.class
 com\mycompany\sockets\BingoClient$1.class
 com\mycompany\sockets\BingoClient$2.class
+com\mycompany\sockets\ClienteSocket.class
 com\mycompany\sockets\Sockets.class
