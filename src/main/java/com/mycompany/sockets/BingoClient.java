@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 public class BingoClient extends JFrame {
-    
+
     // Componentes da interface gráfic
     private JTextField nameField;
     private JLabel nameLabel;
@@ -25,7 +25,7 @@ public class BingoClient extends JFrame {
         setSize(900, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        
+
         // Painel principal
         setLayout(new BorderLayout());
 
@@ -46,7 +46,7 @@ public class BingoClient extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
-         // Centro: Cartão de Bingo (5x5 botões)
+        // Centro: Cartão de Bingo (5x5 botões)
         cardPanel = new JPanel(new GridLayout(5, 5, 5, 5));
         for (int i = 0; i < 25; i++) {
             JButton cell = new JButton("--");
@@ -87,9 +87,18 @@ public class BingoClient extends JFrame {
 
         // Ativar botão "Pronto" só após preencher nome
         nameField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { validateName(); }
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { validateName(); }
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { validateName(); }
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                validateName();
+            }
+
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                validateName();
+            }
+
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                validateName();
+            }
+
             private void validateName() {
                 readyButton.setEnabled(!nameField.getText().trim().isEmpty());
             }
@@ -136,6 +145,7 @@ public class BingoClient extends JFrame {
             button.setBackground(null);
             button.addActionListener(new ActionListener() {
                 boolean marked = false;
+
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (!marked) {
@@ -183,4 +193,10 @@ public class BingoClient extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(BingoClient::new);
     }
+
+    // Atualiza o texto do statusLabel de forma segura na interface gráfica
+    public void updateStatus(String mensagem) {
+        SwingUtilities.invokeLater(() -> statusLabel.setText("Status: " + mensagem));
+    }
+
 }
