@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
-import java.util.List;
 
 public class BingoClient extends JFrame {
 
@@ -248,20 +247,4 @@ public class BingoClient extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(BingoClient::new);
     }
-
-    public void setCardId(String cardId) {
-        this.cardId = cardId;
-        cardIdLabel.setText("Cartão: " + cardId);
-    }
-
-    public void preencherCartaoComNumeros(List<Integer> numeros) {
-        for (int i = 0; i < 25; i++) {
-            int numero = numeros.get(i);
-            JButton botao = cardButtons[i];
-            botao.setText(String.valueOf(numero));
-            botao.setEnabled(true); // Garante que está clicável
-            botao.setBackground(null); // Reset visual
-        }
-    }
-
 }
