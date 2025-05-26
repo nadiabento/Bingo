@@ -226,7 +226,7 @@ public class BingoServer {
     private synchronized void drawAndBroadcastNumber() {
         if (!gameInProgress || bingoClaimedThisGame) {
             // Se o jogo não estiver em progresso ou se alguém já fez bingo, para de sortear.
-             em endGame().
+             
             return;
         }
 

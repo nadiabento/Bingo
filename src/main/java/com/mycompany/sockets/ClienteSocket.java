@@ -5,6 +5,7 @@ import java.net.*;
 
 // Classe responsável pela comunicação entre o cliente e o servidor
 public class ClienteSocket {
+
     private Socket socket;                  // Socket de ligação ao servidor
     private BufferedReader in;             // Para ler mensagens do servidor
     private PrintWriter out;               // Para enviar mensagens ao servidor
@@ -38,7 +39,6 @@ public class ClienteSocket {
     }
 
     // Método privado que corre numa thread separada para ouvir continuamente o servidor.
-     
     private void ouvirServidor() {
         try {
             String linha;
@@ -49,23 +49,35 @@ public class ClienteSocket {
             }
         } catch (IOException e) {
             e.printStackTrace(); // Imprime o erro se a ligação falhar
+            ui.updateStatus("Ligação ao servidor perdida.");// Mostra erro na interface
+        } finally {
+            try {
+                // Garante que o socket é fechado quando a ligação termina
+                socket.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
     /*
-      Analisa e trata a mensagem recebida do servidor.
-      msg mensagem recebida
+  Analisa e trata a mensagem recebida do servidor.
+  msg mensagem recebida
      */
     private void tratarMensagem(String msg) {
         // Exemplo: "NUM:45" — número sorteado
         if (msg.startsWith("NUM:")) {
-            int numero = Integer.parseInt(msg.substring(4)); // extrai número após "NUM:"
-            ui.addDrawnNumber(numero); // atualiza a interface gráfica
+            try {
+                int numero = Integer.parseInt(msg.substring(4)); // Extrai o número após "NUM:"
+                ui.addDrawnNumber(numero); // Atualiza a interface gráfica
+            } catch (NumberFormatException e) {
+                System.err.println("Erro ao interpretar número sorteado: " + msg);
+            }
 
         // Exemplo: "MSG:Linha feita por Joana"
         } else if (msg.startsWith("MSG:")) {
-            String conteudo = msg.substring(4); // extrai mensagem após "MSG:"
-            ui.updateStatus(conteudo); // mostra no status da interface
+            String conteudo = msg.substring(4); // Extrai a mensagem após "MSG:"
+            ui.updateStatus(conteudo); // Mostra no status da interface
 
         // Exemplo: "WIN" — este cliente fez bingo
         } else if (msg.equals("WIN")) {
@@ -74,6 +86,18 @@ public class ClienteSocket {
         // Exemplo: "LOSE" — outro jogador fez bingo
         } else if (msg.equals("LOSE")) {
             ui.updateStatus("Ainda não foi desta. Tenta novamente.");
+
+        // Exemplo: "ERRO:Cartão inválido"
+        } else if (msg.startsWith("ERRO:")) {
+            ui.updateStatus("Erro: " + msg.substring(5)); // Mostra mensagens de erro
+
+        // Exemplo: "INFO:Jogo iniciado"
+        } else if (msg.startsWith("INFO:")) {
+            ui.updateStatus(msg.substring(5)); // Mensagens informativas do servidor
+
+        } else {
+            // Caso a mensagem não seja reconhecida
+            System.out.println("Mensagem não reconhecida: " + msg);
         }
     }
 }
