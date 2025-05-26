@@ -74,30 +74,41 @@ public class ClienteSocket {
                 System.err.println("Erro ao interpretar número sorteado: " + msg);
             }
 
-        // Exemplo: "MSG:Linha feita por Joana"
+            // Exemplo: "MSG:Linha feita por Joana"
         } else if (msg.startsWith("MSG:")) {
             String conteudo = msg.substring(4); // Extrai a mensagem após "MSG:"
             ui.updateStatus(conteudo); // Mostra no status da interface
 
-        // Exemplo: "WIN" — este cliente fez bingo
+            // Exemplo: "WIN" — este cliente fez bingo
         } else if (msg.equals("WIN")) {
             ui.updateStatus("Parabéns! Fizeste Bingo!");
 
-        // Exemplo: "LOSE" — outro jogador fez bingo
+            // Exemplo: "LOSE" — outro jogador fez bingo
         } else if (msg.equals("LOSE")) {
             ui.updateStatus("Ainda não foi desta. Tenta novamente.");
 
-        // Exemplo: "ERRO:Cartão inválido"
+            // Exemplo: "ERRO:Cartão inválido"
         } else if (msg.startsWith("ERRO:")) {
             ui.updateStatus("Erro: " + msg.substring(5)); // Mostra mensagens de erro
 
-        // Exemplo: "INFO:Jogo iniciado"
+            // Exemplo: "INFO:Jogo iniciado"
         } else if (msg.startsWith("INFO:")) {
             ui.updateStatus(msg.substring(5)); // Mensagens informativas do servidor
 
+        } else if (msg.startsWith("CARD_ID:")) {
+            String cardId = msg.substring(8);
+            ui.setCardId(cardId); // vais criar este método na UI (BingoClient)
+        } else if (msg.startsWith("CARD_DATA:")) {
+            String[] partes = msg.substring(10).split(",");
+            java.util.List<Integer> numeros = new java.util.ArrayList<>();
+            for (String parte : partes) {
+                numeros.add(Integer.parseInt(parte));
+            }
+            ui.preencherCartaoComNumeros(numeros); // também vais criar este método na UI
         } else {
             // Caso a mensagem não seja reconhecida
             System.out.println("Mensagem não reconhecida: " + msg);
         }
+
     }
 }
