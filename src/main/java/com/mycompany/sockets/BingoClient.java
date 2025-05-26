@@ -93,9 +93,17 @@ public class BingoClient extends JFrame {
 
         // ---------- LÓGICA DO BOTÃO "PRONTO" ----------
         nameField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { validateName(); }
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { validateName(); }
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { validateName(); }
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                validateName();
+            }
+
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                validateName();
+            }
+
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                validateName();
+            }
 
             // Só ativa o botão "Pronto" se o nome for preenchido
             private void validateName() {
@@ -124,6 +132,7 @@ public class BingoClient extends JFrame {
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Erro ao ligar ao servidor.");
+                statusLabel.setText("Status: Erro de ligação ao servidor.");
             }
         });
 
@@ -131,12 +140,18 @@ public class BingoClient extends JFrame {
         lineButton.addActionListener(e -> {
             if (clienteSocket != null) {
                 clienteSocket.enviarMensagem("LINHA:" + cardId);
+                updateStatus("Linha solicitada...");
+                // Opcional: desativar para evitar spam
+                lineButton.setEnabled(false);
             }
         });
 
         bingoButton.addActionListener(e -> {
             if (clienteSocket != null) {
                 clienteSocket.enviarMensagem("BINGO:" + cardId);
+                updateStatus("Bingo solicitado...");
+                // Opcional: desativar para evitar spam
+                bingoButton.setEnabled(false);
             }
         });
 
@@ -205,7 +220,27 @@ public class BingoClient extends JFrame {
 
     /* Atualiza o texto do statusLabel com uma mensagem recebida do servidor*/
     public void updateStatus(String mensagem) {
-        SwingUtilities.invokeLater(() -> statusLabel.setText("Status: " + mensagem));
+        SwingUtilities.invokeLater(() -> {
+            statusLabel.setText("Status: " + mensagem);
+
+            // Se a mensagem for de confirmação de linha ou bingo, pode atualizar botões
+            if (mensagem.toLowerCase().contains("linha feita") || mensagem.toLowerCase().contains("linha correta")) {
+                lineButton.setEnabled(false);
+            }
+            if (mensagem.toLowerCase().contains("bingo feito") || mensagem.toLowerCase().contains("parabéns")) {
+                bingoButton.setEnabled(false);
+                lineButton.setEnabled(false);
+                // Opcional: bloquear interação no cartão se quiser
+                for (JButton btn : cardButtons) {
+                    btn.setEnabled(false);
+                }
+            }
+            // Se for mensagem de erro ou para tentar novamente, reabilita os botões
+            if (mensagem.toLowerCase().contains("tenta novamente") || mensagem.toLowerCase().contains("erro")) {
+                lineButton.setEnabled(true);
+                bingoButton.setEnabled(true);
+            }
+        });
     }
 
     /* Método principal: cria e executa a interface*/
