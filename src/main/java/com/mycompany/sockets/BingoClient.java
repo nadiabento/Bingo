@@ -139,7 +139,7 @@ public class BingoClient extends JFrame {
         // Botões de linha e bingo enviam pedido ao servidor
         lineButton.addActionListener(e -> {
             if (clienteSocket != null) {
-                clienteSocket.enviarMensagem("LINHA:" + cardId);
+                clienteSocket.enviarMensagem("LINHA:" + cardId + ":" + getNumerosMarcados());
                 updateStatus("Linha solicitada...");
                 // Opcional: desativar para evitar spam
                 lineButton.setEnabled(false);
@@ -148,7 +148,7 @@ public class BingoClient extends JFrame {
 
         bingoButton.addActionListener(e -> {
             if (clienteSocket != null) {
-                clienteSocket.enviarMensagem("BINGO:" + cardId);
+                clienteSocket.enviarMensagem("BINGO:" + cardId + ":" + getNumerosMarcados());
                 updateStatus("Bingo solicitado...");
                 // Opcional: desativar para evitar spam
                 bingoButton.setEnabled(false);
@@ -248,7 +248,6 @@ public class BingoClient extends JFrame {
         SwingUtilities.invokeLater(BingoClient::new);
     }
 
-
     public void setCardId(String cardId) {
         this.cardId = cardId;
         cardIdLabel.setText("Cartão: " + cardId);
@@ -262,6 +261,16 @@ public class BingoClient extends JFrame {
             botao.setEnabled(true); // Garante que está clicável
             botao.setBackground(null); // Reset visual
         }
+    }
+
+    private String getNumerosMarcados() {
+        List<String> marcados = new ArrayList<>();
+        for (JButton botao : cardButtons) {
+            if (botao.getBackground() != null && botao.getBackground().equals(Color.GREEN)) {
+                marcados.add(botao.getText());
+            }
+        }
+        return String.join(",", marcados);
     }
 
 }
