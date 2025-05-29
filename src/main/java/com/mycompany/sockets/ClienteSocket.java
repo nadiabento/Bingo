@@ -65,61 +65,72 @@ public class ClienteSocket {
   msg mensagem recebida
      */
     private void tratarMensagem(String msg) {
-        // Exemplo: "NUM:45" — número sorteado
+        // Trata mensagens no formato "NUM:<número>"
         if (msg.startsWith("NUM:")) {
             try {
-                int numero = Integer.parseInt(msg.substring(4)); // Extrai o número após "NUM:"
-                ui.addDrawnNumber(numero); // Atualiza a interface gráfica
+                int numero = Integer.parseInt(msg.substring(4)); // Extrai o número depois de "NUM:"
+                ui.addDrawnNumber(numero); // Adiciona o número à interface (zona direita)
             } catch (NumberFormatException e) {
                 System.err.println("Erro ao interpretar número sorteado: " + msg);
             }
 
-            // Exemplo: "MSG:Linha feita por Joana"
+            // Trata mensagens no formato "DRAWN_NUMBER:<número>" (novo formato enviado pelo servidor)
+        } else if (msg.startsWith("DRAWN_NUMBER:")) {
+            try {
+                // Extrai o número a partir do índice após o prefixo "DRAWN_NUMBER:"
+                int numero = Integer.parseInt(msg.substring("DRAWN_NUMBER:".length()).trim());
+                ui.addDrawnNumber(numero); // Adiciona à lista de números sorteados na interface
+            } catch (NumberFormatException e) {
+                System.err.println("Erro ao interpretar DRAWN_NUMBER: " + msg);
+            }
+
+            // Trata mensagem especial "GAME_STARTING", que indica o início do jogo
+        } else if (msg.equals("GAME_STARTING")) {
+            ui.updateStatus("O jogo vai começar!"); // Atualiza o label de estado no fundo
+
+            // Mensagem geral enviada com "MSG:<conteúdo>"
         } else if (msg.startsWith("MSG:")) {
-            String conteudo = msg.substring(4); // Extrai a mensagem após "MSG:"
-            ui.updateStatus(conteudo); // Mostra no status da interface
+            String conteudo = msg.substring(4); // Extrai o texto
+            ui.updateStatus(conteudo); // Atualiza o label de estado com a mensagem
 
-            // Exemplo: "WIN" — este cliente fez bingo
+            // O jogador ganhou (mensagem "WIN")
         } else if (msg.equals("WIN")) {
-            ui.updateStatus("Parabéns! Fizeste Bingo!");
+            ui.updateStatus("Parabéns! Fizeste Bingo!"); // Mostra vitória
 
-            // Exemplo: "LOSE" — outro jogador fez bingo
+            // O jogador perdeu (mensagem "LOSE")
         } else if (msg.equals("LOSE")) {
-            ui.updateStatus("Ainda não foi desta. Tenta novamente.");
+            ui.updateStatus("Ainda não foi desta. Tenta novamente."); // Mostra falha
 
-
-        // Exemplo: "ERRO:Cartão inválido"
+            // Erros do servidor: "ERRO:<mensagem>"
         } else if (msg.startsWith("ERRO:")) {
-            ui.updateStatus("Erro: " + msg.substring(5)); // Mostra mensagens de erro
+            ui.updateStatus("Erro: " + msg.substring(5)); // Mostra o erro na interface
 
-        // Exemplo: "INFO:Jogo iniciado"
+            // Informações do servidor: "INFO:<mensagem informativa>"
         } else if (msg.startsWith("INFO:")) {
-            ui.updateStatus(msg.substring(5)); // Mensagens informativas do servidor
+            ui.updateStatus(msg.substring(5)); // Exibe informação no status
 
-
-            // Exemplo: "ERRO:Cartão inválido"
-        } else if (msg.startsWith("ERRO:")) {
-            ui.updateStatus("Erro: " + msg.substring(5)); // Mostra mensagens de erro
-
-            // Exemplo: "INFO:Jogo iniciado"
-        } else if (msg.startsWith("INFO:")) {
-            ui.updateStatus(msg.substring(5)); // Mensagens informativas do servidor
-
+            // Define o ID do cartão atribuído pelo servidor: "CARD_ID:<id>"
         } else if (msg.startsWith("CARD_ID:")) {
-            String cardId = msg.substring(8);
-            ui.setCardId(cardId); // vais criar este método na UI (BingoClient)
+            String cardId = msg.substring(8); // Extrai o ID
+            ui.setCardId(cardId); // Define o ID na interface (canto superior direito)
+
+            // Recebe os números do cartão: "CARD_DATA:1,2,3,..."
         } else if (msg.startsWith("CARD_DATA:")) {
-            String[] partes = msg.substring(10).split(",");
+            String[] partes = msg.substring(10).split(","); // Divide os números por vírgulas
             java.util.List<Integer> numeros = new java.util.ArrayList<>();
             for (String parte : partes) {
-                numeros.add(Integer.parseInt(parte));
+                numeros.add(Integer.parseInt(parte)); // Converte cada número para inteiro
             }
-            ui.preencherCartaoComNumeros(numeros); // também vais criar este método na UI
+            ui.preencherCartaoComNumeros(numeros); // Preenche os botões do cartão na interface
 
+            // Mensagem a informar que está à espera de mais jogadores
+        } else if (msg.startsWith("WAITING_FOR_PLAYERS:")) {
+            ui.updateStatus(msg); // Mostra no status
+
+            // Se nenhuma das opções anteriores corresponder, é uma mensagem desconhecida
         } else {
-            // Caso a mensagem não seja reconhecida
-            System.out.println("Mensagem não reconhecida: " + msg);
+            System.out.println("Mensagem não reconhecida: " + msg); // Debug no terminal
         }
-
     }
+
 }

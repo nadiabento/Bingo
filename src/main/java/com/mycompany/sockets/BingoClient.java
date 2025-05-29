@@ -118,11 +118,10 @@ public class BingoClient extends JFrame {
             try {
                 // Conecta ao servidor
                 clienteSocket = new ClienteSocket("localhost", 12345, this);
-
                 // Envia nome e ID
                 String nome = nameField.getText().trim();
-                clienteSocket.enviarMensagem("NOME:" + nome + ";" + cardId);
-
+                clienteSocket.enviarMensagem("REGISTER:" + nome);
+                clienteSocket.enviarMensagem("READY");
                 // Interface: oculta botão e prepara cartão
                 readyButton.setVisible(false);
                 generateCard(); // Pode ser substituído por preencherCartaoComNumeros(...) do servidor
