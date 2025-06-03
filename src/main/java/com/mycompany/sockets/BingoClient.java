@@ -139,18 +139,16 @@ public class BingoClient extends JFrame {
         // Botões de linha e bingo enviam pedido ao servidor
         lineButton.addActionListener(e -> {
             if (clienteSocket != null) {
-                clienteSocket.enviarMensagem("LINHA:" + cardId + ":" + getNumerosMarcados());
+                clienteSocket.enviarMensagem("CLAIM_LINE:");
                 updateStatus("Linha solicitada...");
-                // Opcional: desativar para evitar spam
                 lineButton.setEnabled(false);
             }
         });
 
         bingoButton.addActionListener(e -> {
             if (clienteSocket != null) {
-                clienteSocket.enviarMensagem("BINGO:" + cardId + ":" + getNumerosMarcados());
+                clienteSocket.enviarMensagem("CLAIM_BINGO:");
                 updateStatus("Bingo solicitado...");
-                // Opcional: desativar para evitar spam
                 bingoButton.setEnabled(false);
             }
         });
@@ -204,18 +202,20 @@ public class BingoClient extends JFrame {
 
     /* mais recente aparece a negrito*/
     public void addDrawnNumber(int number) {
-        JLabel newLabel = new JLabel(String.valueOf(number));
-        newLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        SwingUtilities.invokeLater(() -> {
+            JLabel newLabel = new JLabel(String.valueOf(number));
+            newLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
-        // Os anteriores voltam ao normal
-        for (JLabel label : drawnNumberLabels) {
-            label.setFont(new Font("Arial", Font.PLAIN, 16));
-        }
+            // Os anteriores voltam ao normal
+            for (JLabel label : drawnNumberLabels) {
+                label.setFont(new Font("Arial", Font.PLAIN, 16));
+            }
 
-        drawnNumberLabels.add(newLabel);
-        drawnNumbersPanel.add(newLabel);
-        drawnNumbersPanel.revalidate();
-        drawnNumbersPanel.repaint();
+            drawnNumberLabels.add(newLabel);
+            drawnNumbersPanel.add(newLabel);
+            drawnNumbersPanel.revalidate();
+            drawnNumbersPanel.repaint();
+        });
     }
 
     /* Atualiza o texto do statusLabel com uma mensagem recebida do servidor*/
@@ -250,7 +250,7 @@ public class BingoClient extends JFrame {
 
     public void setCardId(String cardId) {
         this.cardId = cardId;
-        cardIdLabel.setText("Cartão: " + cardId);
+        this.cardIdLabel.setText("Cartão: " + cardId);
     }
 
     public void preencherCartaoComNumeros(List<Integer> numeros) {
@@ -272,5 +272,13 @@ public class BingoClient extends JFrame {
         }
         return String.join(",", marcados);
     }
+    
+    public void reabilitarBotaoLinha() {
+    lineButton.setEnabled(true);
+}
+
+public void reabilitarBotaoBingo() {
+    bingoButton.setEnabled(true);
+}
 
 }

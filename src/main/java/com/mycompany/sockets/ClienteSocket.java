@@ -60,10 +60,7 @@ public class ClienteSocket {
         }
     }
 
-    /*
-  Analisa e trata a mensagem recebida do servidor.
-  msg mensagem recebida
-     */
+    //Analisa e trata a mensagem recebida do servidor msg mensagem recebida
     private void tratarMensagem(String msg) {
         // Trata mensagens no formato "NUM:<número>"
         if (msg.startsWith("NUM:")) {
@@ -127,8 +124,21 @@ public class ClienteSocket {
         } else if (msg.startsWith("WAITING_FOR_PLAYERS:")) {
             ui.updateStatus(msg); // Mostra no status
 
-            // Se nenhuma das opções anteriores corresponder, é uma mensagem desconhecida
-        } else {
+        } else if (msg.startsWith("VALIDATION_LINE_FAIL:")) {
+            ui.updateStatus(msg.substring("VALIDATION_LINE_FAIL:".length()).trim());
+            ui.reabilitarBotaoLinha(); // <-- método que tu defines para voltar a ativar o botão
+        } else if (msg.startsWith("VALIDATION_LINE_OK")) {
+            ui.updateStatus("Linha validada com sucesso!");
+        } else if (msg.startsWith("VALIDATION_BINGO_FAIL:")) {
+            ui.updateStatus(msg.substring("VALIDATION_BINGO_FAIL:".length()).trim());
+            ui.reabilitarBotaoBingo();
+        } else if (msg.startsWith("VALIDATION_BINGO_OK")) {
+            ui.updateStatus("Bingo validado com sucesso!");
+        } else if (msg.startsWith("LINE_ANNOUNCEMENT:")) {
+            String conteudo = msg.substring("LINE_ANNOUNCEMENT:".length()).trim();
+            ui.updateStatus(conteudo);
+        } // Se nenhuma das opções anteriores corresponder, é uma mensagem desconhecida
+        else {
             System.out.println("Mensagem não reconhecida: " + msg); // Debug no terminal
         }
     }
