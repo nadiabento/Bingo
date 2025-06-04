@@ -111,7 +111,7 @@ public class BingoClient extends JFrame {
                 readyButton.setEnabled(!nameField.getText().trim().isEmpty());
             }
         });
-        readyButton.setEnabled(false); // Inicialmente desativado
+        readyButton.setEnabled(false); // Inicialmente desativado até escrever o nome
 
         // Ação ao clicar "Pronto para iniciar"
         readyButton.addActionListener(e -> {
@@ -120,11 +120,12 @@ public class BingoClient extends JFrame {
                 clienteSocket = new ClienteSocket("localhost", 12345, this);
                 // Envia nome e ID
                 String nome = nameField.getText().trim();
+                setJogadorNome(nome);
                 clienteSocket.enviarMensagem("REGISTER:" + nome);
                 clienteSocket.enviarMensagem("READY");
                 // Interface: oculta botão e prepara cartão
                 readyButton.setVisible(false);
-                generateCard(); // Pode ser substituído por preencherCartaoComNumeros(...) do servidor
+                //generateCard(); // Pode ser substituído por preencherCartaoComNumeros(...) do servidor
                 statusLabel.setText("Status: Waiting for other players...");
                 lineButton.setEnabled(true);
                 bingoButton.setEnabled(true);
@@ -167,7 +168,7 @@ public class BingoClient extends JFrame {
     }
 
     /* Este método pode ser removido se o cartão for recebido do servidor.*/
-    private void generateCard() {
+ /* void generateCard() {
         Set<Integer> numbers = new LinkedHashSet<>();
         Random rand = new Random();
         while (numbers.size() < 25) {
@@ -198,9 +199,9 @@ public class BingoClient extends JFrame {
                 }
             });
         }
-    }
+    }*/
 
-    /* mais recente aparece a negrito*/
+ /* mais recente aparece a negrito*/
     public void addDrawnNumber(int number) {
         SwingUtilities.invokeLater(() -> {
             JLabel newLabel = new JLabel(String.valueOf(number));
@@ -224,9 +225,11 @@ public class BingoClient extends JFrame {
             statusLabel.setText("Status: " + mensagem);
 
             // Se a mensagem for de confirmação de linha ou bingo, pode atualizar botões
-            if (mensagem.toLowerCase().contains("linha feita") || mensagem.toLowerCase().contains("linha correta")) {
-                lineButton.setEnabled(false);
+            if ((mensagem.toLowerCase().contains("linha feita") || mensagem.toLowerCase().contains("linha correta"))
+                    && mensagem.toLowerCase().contains(jogadorNome.toLowerCase())) {
+                lineButton.setEnabled(false); // Apenas se for este jogador que fez a linha
             }
+
             if (mensagem.toLowerCase().contains("bingo feito") || mensagem.toLowerCase().contains("parabéns")) {
                 bingoButton.setEnabled(false);
                 lineButton.setEnabled(false);
@@ -263,22 +266,24 @@ public class BingoClient extends JFrame {
         }
     }
 
-    private String getNumerosMarcados() {
-        List<String> marcados = new ArrayList<>();
-        for (JButton botao : cardButtons) {
-            if (botao.getBackground() != null && botao.getBackground().equals(Color.GREEN)) {
-                marcados.add(botao.getText());
-            }
-        }
-        return String.join(",", marcados);
-    }
-    
+    // Reativa o botão "Linha"
     public void reabilitarBotaoLinha() {
-    lineButton.setEnabled(true);
-}
+        SwingUtilities.invokeLater(() -> {
+            lineButton.setEnabled(true);
+        });
+    }
 
-public void reabilitarBotaoBingo() {
-    bingoButton.setEnabled(true);
-}
+    // Reativa o botão "Bingo"
+    public void reabilitarBotaoBingo() {
+        SwingUtilities.invokeLater(() -> {
+            bingoButton.setEnabled(true);
+        });
+    }
+
+    
+    private String jogadorNome;
+    public void setJogadorNome(String nome) {
+        this.jogadorNome = nome;
+    }
 
 }

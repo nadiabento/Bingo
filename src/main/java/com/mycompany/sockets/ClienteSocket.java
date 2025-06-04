@@ -123,17 +123,26 @@ public class ClienteSocket {
             // Mensagem a informar que está à espera de mais jogadores
         } else if (msg.startsWith("WAITING_FOR_PLAYERS:")) {
             ui.updateStatus(msg); // Mostra no status
-
+            // Linha inválida
+            
         } else if (msg.startsWith("VALIDATION_LINE_FAIL:")) {
             ui.updateStatus(msg.substring("VALIDATION_LINE_FAIL:".length()).trim());
             ui.reabilitarBotaoLinha(); // <-- método que tu defines para voltar a ativar o botão
+            
+            // Linha validada com sucesso
         } else if (msg.startsWith("VALIDATION_LINE_OK")) {
             ui.updateStatus("Linha validada com sucesso!");
+            
+            // Bingo inválido
         } else if (msg.startsWith("VALIDATION_BINGO_FAIL:")) {
             ui.updateStatus(msg.substring("VALIDATION_BINGO_FAIL:".length()).trim());
             ui.reabilitarBotaoBingo();
+            
+            // Bingo validado com sucesso
         } else if (msg.startsWith("VALIDATION_BINGO_OK")) {
             ui.updateStatus("Bingo validado com sucesso!");
+            
+            // Alguém fez linha (informação para todos)
         } else if (msg.startsWith("LINE_ANNOUNCEMENT:")) {
             String conteudo = msg.substring("LINE_ANNOUNCEMENT:".length()).trim();
             ui.updateStatus(conteudo);
