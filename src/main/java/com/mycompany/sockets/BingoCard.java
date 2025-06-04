@@ -3,10 +3,8 @@ package com.mycompany.sockets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,23 +30,36 @@ public class BingoCard {
 
     private void generateNumbers() {
 
-        Set<Integer> uniqueNumbers = new LinkedHashSet<>();
         Random random = new Random();
+        this.linearNumbers.clear();
 
-        while (uniqueNumbers.size() < NUMBERS_PER_CARD) {
-            int randomNumber = random.nextInt(MAX_NUMBER_VALUE - MIN_NUMBER_VALUE + 1) + MIN_NUMBER_VALUE;
-            uniqueNumbers.add(randomNumber);
+        int[] minPerColumn = {1, 21, 41, 61, 81};
+        int[] maxPerColumn = {20, 40, 60, 80, 99};
+
+        for (int j = 0; j < CARD_SIZE; j++) { // intera por colunas primeiro
+            Set<Integer> numbersInThisColumn = new HashSet<>();
+            int minVal = minPerColumn[j];
+            int maxVal = maxPerColumn[j];
+
+            while (numbersInThisColumn.size() < CARD_SIZE) { // 5 numbers por column
+                int randomNumber = random.nextInt(maxVal - minVal + 1) + minVal;
+                numbersInThisColumn.add(randomNumber);
+            }
+
+            List<Integer> columnNumbersList = new ArrayList<>(numbersInThisColumn);
+            Collections.shuffle(columnNumbersList);
+
+            for (int i = 0; i < CARD_SIZE; i++) {
+                this.numbers[i][j] = columnNumbersList.get(i);
+            }
         }
-
-        Iterator<Integer> iterator = uniqueNumbers.iterator();
 
         for (int i = 0; i < CARD_SIZE; i++) {
             for (int j = 0; j < CARD_SIZE; j++) {
-                int num = iterator.next(); // Obtém o próximo número único
-                this.numbers[i][j] = num;
-                this.linearNumbers.add(num);
+                this.linearNumbers.add(this.numbers[i][j]);
             }
         }
+
     }
 
     public String getId() {
