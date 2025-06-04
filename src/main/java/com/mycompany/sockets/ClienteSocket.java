@@ -10,6 +10,7 @@ public class ClienteSocket {
     private BufferedReader in;             // Para ler mensagens do servidor
     private PrintWriter out;               // Para enviar mensagens ao servidor
     private BingoClient ui;                // Referência à interface gráfica (BingoClient)
+    private boolean jogoTerminado = false;
 
     /*
      Construtor da classe ClienteSocket.
@@ -101,11 +102,11 @@ public class ClienteSocket {
             // Erros do servidor: "ERRO:<mensagem>"
         } else if (msg.startsWith("ERRO:")) {
             ui.updateStatus("Erro: " + msg.substring(5)); // Mostra o erro na interface
-
             // Informações do servidor: "INFO:<mensagem informativa>"
         } else if (msg.startsWith("INFO:")) {
-            ui.updateStatus(msg.substring(5)); // Exibe informação no status
-
+            if (!jogoTerminado) {
+                ui.updateStatus(msg.substring(5)); // Exibe informação no status
+            }
             // Define o ID do cartão atribuído pelo servidor: "CARD_ID:<id>"
         } else if (msg.startsWith("CARD_ID:")) {
             String cardId = msg.substring(8); // Extrai o ID
@@ -122,8 +123,9 @@ public class ClienteSocket {
 
             // Mensagem a informar que está à espera de mais jogadores
         } else if (msg.startsWith("WAITING_FOR_PLAYERS:")) {
-            ui.updateStatus(msg); // Mostra no status
-            // Linha inválida
+            if (!jogoTerminado) {
+                ui.updateStatus(msg); // Mostra no status
+            }
 
         } else if (msg.startsWith("VALIDATION_LINE_FAIL:")) {
             ui.updateStatus(msg.substring("VALIDATION_LINE_FAIL:".length()).trim());
@@ -151,11 +153,12 @@ public class ClienteSocket {
         else if (msg.startsWith("BINGO_WINNER:")) {
             String conteudo = msg.substring("BINGO_WINNER:".length()).trim();
             ui.updateStatus(conteudo);
+            jogoTerminado = true;
             // Se nenhuma das opções anteriores corresponder, é uma mensagem desconhecida
-        } else if (msg.startsWith(
-                "BINGO_LOSER:")) {
+        } else if (msg.startsWith("BINGO_LOSER:")) {
             String conteudo = msg.substring("BINGO_LOSER:".length()).trim();
             ui.updateStatus(conteudo);
+            jogoTerminado = true;
         } else {
             System.out.println("Mensagem não reconhecida: " + msg); // Debug no terminal
         }
