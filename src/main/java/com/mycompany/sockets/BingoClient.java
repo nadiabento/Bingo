@@ -201,7 +201,7 @@ public class BingoClient extends JFrame {
         }
     }*/
 
-    /* mais recente aparece a negrito*/
+ /* mais recente aparece a negrito*/
     public void addDrawnNumber(int number) {
         SwingUtilities.invokeLater(() -> {
             JLabel newLabel = new JLabel(String.valueOf(number));
@@ -257,36 +257,35 @@ public class BingoClient extends JFrame {
     }
 
     public void preencherCartaoComNumeros(List<Integer> numeros) {
-    for (int i = 0; i < 25; i++) {
-        int numero = numeros.get(i);
-        JButton botao = cardButtons[i];
-        botao.setText(String.valueOf(numero));
-        botao.setEnabled(true); // Garante que está clicável
-        botao.setBackground(null); // Reset visual
+        for (int i = 0; i < 25; i++) {
+            int numero = numeros.get(i);
+            JButton botao = cardButtons[i];
+            botao.setText(String.valueOf(numero));
+            botao.setEnabled(true); // Garante que está clicável
+            botao.setBackground(null); // Reset visual
 
-        // Remover listeners anteriores para evitar múltiplos
-        for (ActionListener al : botao.getActionListeners()) {
-            botao.removeActionListener(al);
-        }
-
-        // Adicionar novamente o listener para permitir marcar/desmarcar
-        botao.addActionListener(new ActionListener() {
-            boolean marcado = false;
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!marcado) {
-                    botao.setBackground(Color.GREEN);
-                    marcado = true;
-                } else {
-                    botao.setBackground(null);
-                    marcado = false;
-                }
+            // Remover listeners anteriores para evitar múltiplos
+            for (ActionListener al : botao.getActionListeners()) {
+                botao.removeActionListener(al);
             }
-        });
-    }
-}
 
+            // Adicionar novamente o listener para permitir marcar/desmarcar
+            botao.addActionListener(new ActionListener() {
+                boolean marcado = false;
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (!marcado) {
+                        botao.setBackground(Color.GREEN);
+                        marcado = true;
+                    } else {
+                        botao.setBackground(null);
+                        marcado = false;
+                    }
+                }
+            });
+        }
+    }
 
     // Reativa o botão "Linha"
     public void reabilitarBotaoLinha() {
