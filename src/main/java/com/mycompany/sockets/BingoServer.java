@@ -116,7 +116,6 @@ public class BingoServer {
         for (ClientHandler ch : clientHandlers) {
             if (ch.getPlayerName() != null && ch.getPlayerName().equalsIgnoreCase(playerName)) {
                 handler.sendMessage("ERROR:O nome '" + playerName + "' já está em uso. Por favor, escolha outro.");
-                closeClientSocketGracefully(handler.getClientSocket(), "jogador com nome duplicado " + playerName);
                 return;
             }
         }

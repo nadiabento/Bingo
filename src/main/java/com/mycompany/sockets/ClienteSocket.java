@@ -159,6 +159,10 @@ public class ClienteSocket {
             String conteudo = msg.substring("BINGO_LOSER:".length()).trim();
             ui.updateStatus(conteudo);
             jogoTerminado = true;
+        } else if (msg.startsWith("ERRO:") || msg.startsWith("ERROR:")) {
+            String erro = msg.contains(":") ? msg.substring(msg.indexOf(":") + 1).trim() : "Erro desconhecido.";
+            ui.updateStatus("Erro: " + erro);
+            ui.reabilitarCampoNome();      // permitir digitar novo nome
         } else {
             System.out.println("Mensagem não reconhecida: " + msg); // Debug no terminal
         }

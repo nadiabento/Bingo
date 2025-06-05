@@ -307,4 +307,42 @@ public class BingoClient extends JFrame {
         this.jogadorNome = nome;
     }
 
+    public void reabilitarCampoNome() {
+    SwingUtilities.invokeLater(() -> {
+        // Remove o label com o nome fixo
+        namePanel.removeAll();
+
+        // Recria o campo de texto
+        nameField = new JTextField(15);
+        namePanel.add(new JLabel("Name: "));
+        namePanel.add(nameField);
+        namePanel.revalidate();
+        namePanel.repaint();
+
+        // Reativar botão "Pronto"
+        readyButton.setVisible(true);
+        readyButton.setEnabled(false); // Desativado até digitar
+
+        // Reaplicar a lógica de validação do nome
+        nameField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                validateName();
+            }
+
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                validateName();
+            }
+
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                validateName();
+            }
+
+            private void validateName() {
+                readyButton.setEnabled(!nameField.getText().trim().isEmpty());
+            }
+        });
+    });
+}
+
+
 }
